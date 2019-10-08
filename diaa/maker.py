@@ -50,4 +50,3 @@ def calc(file):
     print("fleiss " + str(ratingtask.multi_kappa()))
     print("alpha " +str(ratingtask.alpha()))
     print("scotts " + str(ratingtask.pi()))
-
