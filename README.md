@@ -1,18 +1,14 @@
 
 
 
-## How to install Dia
+## How to use
 
 ```
 git clone https://github.com/vwoloszyn/diaa/
 source dia/bin/activate
+python3.7 main.py  -u http://doccano_host [user] [password] [project_number]
 ```
 
-### Command-line usage
-
-```
-    python3.7 main.py  -u http://doccano_host [user] [password] [project_number]
-```
 
 * Instance-based F1 agreement
 
