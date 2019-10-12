@@ -123,6 +123,14 @@ def docs_to_ann(docs):
                     #print (line)
                     f.write(line+"\n")
             #print (file_dir_user)
+
+    #making sure that we have same number of files in each dir
+    for f in list(set(files_)):
+        for a in list(set(annotators_)):
+            file_dir=temp_dir+"/"+str(a)+"/"+str(f)
+            #print (file_dir)
+            open(file_dir, 'a+')
+
     return temp_dir,list(set(labels_)),list(set(annotators_)),list(set(files_))
 
 
@@ -135,6 +143,7 @@ def compute_f1_scores(docs):
     project,labels,annotators,docs = docs_to_ann(docs)
     #print (annotators)
     #print (docs)
+    print (project)
     xx=F1Agreement(partial(input_generator, project), labels,annotators=annotators, documents=docs)
 
     import bratiaa as biaa
