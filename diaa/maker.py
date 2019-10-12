@@ -22,10 +22,8 @@ def get_docs_from_doccano(url_):
     pass_=url_[2]
     project_=url_[3]
     ##getting token
-    #http post http://tc.qu.tu-berlin.de/v1/auth-token username=vinicius password=nopassword
 
     auth_url=host+"/v1/auth-token"
-    #print (auth_url)
     data = {'username': user_, 'password': pass_}
     req = request.Request(auth_url)
     req.add_header('Content-Type', 'application/json; charset=utf-8')
@@ -34,9 +32,6 @@ def get_docs_from_doccano(url_):
     result = request.urlopen(req, jsondataasbytes).read()
     token=json.loads(result)["token"]
     header = {'Content-Type': 'application/json; charset=utf-8','Authorization': 'Token '+str(token)}
-    #print (token)
-
-    #http://tc.qu.tu-berlin.de/v1/projects/4/docs/download?q=json
 
     data_url=host+"/v1/projects/"+str(project_)+"/docs/download?q=json&format=json"
     #print (data_url)
@@ -79,8 +74,6 @@ def get_labels(docs):
                 labels_.append((str(u),key, 0))
     if len(labels_)==0:
         print ("no labels found")
-
-    #print (labels_)
     return labels_
 
 
@@ -114,15 +107,12 @@ def docs_to_ann(docs):
             dir_user=str(temp_dir)+"/"+str(u)
             file_dir_user=dir_user+"/"+str(i)+".ann"
             os.makedirs(dir_user, exist_ok=True)
-            #print (dir_user)
             files_.append(str(i)+".ann")
             with open(file_dir_user, 'w') as f:
                 for v in values:
-
                     line=str(v[0])+"\t"+str(v[1])+" "+str(v[2])+" "+str(v[3])
                     #print (line)
                     f.write(line+"\n")
-            #print (file_dir_user)
 
     #making sure that we have same number of files in each dir
     for f in list(set(files_)):
@@ -134,34 +124,11 @@ def docs_to_ann(docs):
     return temp_dir,list(set(labels_)),list(set(annotators_)),list(set(files_))
 
 
-
-
 def compute_f1_scores(docs):
-    metrics={}
-
     from bratiaa.agree import F1Agreement, partial, input_generator
     project,labels,annotators,docs = docs_to_ann(docs)
-    #print (annotators)
-    #print (docs)
-    print (project)
-    xx=F1Agreement(partial(input_generator, project), labels,annotators=annotators, documents=docs)
-
-    import bratiaa as biaa
-
-    biaa.iaa_report(xx)
-    #
-    #
-    # print (project)
-    # metrics["f1"]=xx.mean_sd_total()[0]
-    # print ("f1")
-    # print (xx.mean_sd_total()[0])
-    # print ("f1 per doc")
-    # print (xx.mean_sd_per_document())
-
-    return metrics
-
-
-
+    agg=F1Agreement(partial(input_generator, project), labels,annotators=annotators, documents=docs)
+    return agg
 
 
 def calc(labels):
