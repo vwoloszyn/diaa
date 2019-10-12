@@ -1,7 +1,7 @@
 
 
 
-## Installing Dia
+## How to install Dia
 
 Expected package dependencies are listed in the "requirements.txt" file for PIP, you need to run the following command to get dependencies:
 ```
