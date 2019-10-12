@@ -7,7 +7,7 @@
 git clone https://github.com/vwoloszyn/diaa/
 source dia/bin/activate
 python3.7 main.py  -u http://doccano_host [user] [password] [project_number]
-```
+
 
 
 * Instance-based F1 agreement
@@ -60,3 +60,5 @@ python3.7 main.py  -u http://doccano_host [user] [password] [project_number]
 ## Overall Agreement
 
 * Mean F1: 0.233, SD F1: 0.000
+
+```
