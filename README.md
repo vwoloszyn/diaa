@@ -1,5 +1,7 @@
 
+# Doccano Inter-Annotator Agreement
 
+In short, it connects automatically to a Doccano server - also accepts json files as input -, to checks Data Quality before training a Machine Learning model.
 
 ## How to use
 
