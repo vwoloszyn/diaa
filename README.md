@@ -13,3 +13,8 @@ source dia/bin/activate
 ```
     python main.py -a file.jsonl
 ```
+
+```
+    python3.7 main.py  -u http://host.com user password [project number]
+```
+
