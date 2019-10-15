@@ -10,7 +10,6 @@ if __name__ == "__main__":
     pparser = argparse.ArgumentParser()
     pparser.add_argument('-i', help='input', required=False )
     pparser.add_argument('-u', help='url', nargs='+', default=[], required=False, )
-
     args = pparser.parse_args()
 
     if args.u :

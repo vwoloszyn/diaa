@@ -98,26 +98,35 @@ def docs_to_ann(docs):
                 annotators_.append(str(user_))
                 start_=label["start_offset"]
                 end_=label["end_offset"]
+                sub_text=text[int(start_):][:int(end_-start_)]
                 if user_ not in users_.keys():
                     users_[user_]=[]
                 nonono = "x" * int(int(end_)-int(start_))
-                users_[user_].append(["T"+str(len(users_[user_])+1),type_,start_,end_,nonono])
+                users_[user_].append(["T"+str(len(users_[user_])+1),type_,start_,end_,sub_text])
+                #print (sub_text)
 
         for u,values in users_.items():
             dir_user=str(temp_dir)+"/"+str(u)
-            file_dir_user=dir_user+"/"+str(i)+".ann"
+            file_dir_user=dir_user+"/"+str(i+1)+".ann"
             os.makedirs(dir_user, exist_ok=True)
-            files_.append(str(i)+".ann")
+            files_.append(str(i+1)+".ann")
             with open(file_dir_user, 'w') as f:
                 for v in values:
-                    line=str(v[0])+"\t"+str(v[1])+" "+str(v[2])+" "+str(v[3])
+                    line=str(v[0])+"\t"+str(v[1])+" "+str(v[2])+" "+str(v[3])+"\t"+str(v[4])
                     #print (line)
                     f.write(line+"\n")
+            ##add txt files
+            with open(dir_user+"/"+str(i+1)+".txt", 'w') as f:
+                f.write(text+"\n")
+
+
+
 
     #making sure that we have same number of files in each dir
     for f in list(set(files_)):
         for a in list(set(annotators_)):
             file_dir=temp_dir+"/"+str(a)+"/"+str(f)
+            #
             #print (file_dir)
             open(file_dir, 'a+')
 
@@ -126,8 +135,18 @@ def docs_to_ann(docs):
 
 def compute_f1_scores(docs):
     from bratiaa.agree import F1Agreement, partial, input_generator
+    from bratiaa.evaluation import exact_match_token_evaluation,exact_match_instance_evaluation
     project,labels,annotators,docs = docs_to_ann(docs)
-    agg=F1Agreement(partial(input_generator, project), labels,annotators=annotators, documents=docs)
+    import re
+
+    def token_func(text):
+        token = re.compile('\w+|[^\w\s]+')
+        for match in re.finditer(token, text):
+            yield match.start(), match.end()
+
+
+    agg=F1Agreement(partial(input_generator, project), labels,annotators=annotators, documents=docs, token_func=token_func,
+                    eval_func=exact_match_token_evaluation)
     return agg
 
 
