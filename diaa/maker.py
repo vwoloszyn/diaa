@@ -85,12 +85,15 @@ def docs_to_ann(docs):
     labels_=[]
     annotators_=[]
     files_=[]
+    texts_=[]
     for i in range(len(docs)):
         doc=docs[i]
+        text=doc["text"]
+        texts_.append(text)
         if ("annotations" in list(doc.keys())):
-            text=doc["text"]
             labels=doc["annotations"]
             users_={}
+
             for label in labels:
                 user_=label["user"]
                 type_=str(label["label"])
@@ -122,13 +125,24 @@ def docs_to_ann(docs):
 
 
 
-    #making sure that we have same number of files in each dir
+    #making sure that we have same TXT files in each dir
+    for i in range(len(texts_)):
+        for u in list(set(annotators_)):
+            file_=temp_dir+"/"+str(u)+"/"+str(i+1)+".txt"
+            #print (file_)
+            #annotation
+            with open(file_, 'w') as f:
+                f.write(texts_[i]+"\n")
+
+
+    #making sure that we have same ANN files in each dir
     for f in list(set(files_)):
         for a in list(set(annotators_)):
             file_dir=temp_dir+"/"+str(a)+"/"+str(f)
-            #
-            #print (file_dir)
+            #annotation
             open(file_dir, 'a+')
+
+
 
     return temp_dir,list(set(labels_)),list(set(annotators_)),list(set(files_))
 
