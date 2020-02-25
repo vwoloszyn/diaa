@@ -2,6 +2,8 @@ import json
 from nltk import agreement
 from urllib import request, parse
 import json,urllib.request
+
+
 import os
 import tempfile
 
@@ -143,7 +145,7 @@ def docs_to_ann(docs):
             open(file_dir, 'a+')
 
 
-
+    print (temp_dir)
     return temp_dir,list(set(labels_)),list(set(annotators_)),list(set(files_))
 
 
