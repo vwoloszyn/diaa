@@ -7,8 +7,8 @@ In short, it connects automatically to a Doccano server - also accepts json file
 
 ```
 git clone https://github.com/vwoloszyn/diaa/
-source dia/bin/activate
-python3.7 main.py  -u http://doccano_host [user] [password] [project_number]
+pip install requirements.txt
+python main.py  -u http://doccano_host [user] [password] [project_number]
 
 
 
