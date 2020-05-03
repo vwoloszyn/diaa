@@ -2,23 +2,22 @@ import json
 from nltk import agreement
 from urllib import request, parse
 import json,urllib.request
-
-
+import re
 import os
 import tempfile
+from bratiaa.agree import F1Agreement, partial, input_generator
+from bratiaa.evaluation import exact_match_token_evaluation,exact_match_instance_evaluation
 
 def get_docs_from_json(fn):
     lines=[]
     fh = open(fn)
     for line in fh:
         lines.append(json.loads(line))
-        #break
     fh.close()
     return lines
 
 
 def get_docs_from_doccano(url_):
-
     host=url_[0]
     user_=url_[1]
     pass_=url_[2]
@@ -36,14 +35,12 @@ def get_docs_from_doccano(url_):
     header = {'Content-Type': 'application/json; charset=utf-8','Authorization': 'Token '+str(token)}
 
     data_url=host+"/v1/projects/"+str(project_)+"/docs/download?q=json&format=json"
-    #print (data_url)
     req =  request.Request(data_url, headers=header)
     webURL = request.urlopen(req)
 
     data=[]
     for line in webURL:
         data.append(json.loads(line.decode("utf-8")))
-
     return data
 
 
@@ -90,12 +87,13 @@ def docs_to_ann(docs):
     texts_=[]
     for i in range(len(docs)):
         doc=docs[i]
-        text=doc["text"]
+        #replacing "\n\t" with " " to avoid error "bratsubset.annotation.InvalidIdError: Invalid id:"
+        #text=doc["text"]
+        text=re.sub(r"[\t]+", " ", doc["text"])
         texts_.append(text)
         if ("annotations" in list(doc.keys())):
             labels=doc["annotations"]
             users_={}
-
             for label in labels:
                 user_=label["user"]
                 type_=str(label["label"])
@@ -108,7 +106,6 @@ def docs_to_ann(docs):
                     users_[user_]=[]
                 nonono = "x" * int(int(end_)-int(start_))
                 users_[user_].append(["T"+str(len(users_[user_])+1),type_,start_,end_,sub_text])
-                #print (sub_text)
 
         for u,values in users_.items():
             dir_user=str(temp_dir)+"/"+str(u)
@@ -118,20 +115,15 @@ def docs_to_ann(docs):
             with open(file_dir_user, 'w') as f:
                 for v in values:
                     line=str(v[0])+"\t"+str(v[1])+" "+str(v[2])+" "+str(v[3])+"\t"+str(v[4])
-                    #print (line)
                     f.write(line+"\n")
             ##add txt files
             with open(dir_user+"/"+str(i+1)+".txt", 'w') as f:
                 f.write(text+"\n")
 
-
-
-
     #making sure that we have same TXT files in each dir
     for i in range(len(texts_)):
         for u in list(set(annotators_)):
             file_=temp_dir+"/"+str(u)+"/"+str(i+1)+".txt"
-            #print (file_)
             #annotation
             with open(file_, 'w') as f:
                 f.write(texts_[i]+"\n")
@@ -143,17 +135,13 @@ def docs_to_ann(docs):
             file_dir=temp_dir+"/"+str(a)+"/"+str(f)
             #annotation
             open(file_dir, 'a+')
-
-
-    print (temp_dir)
+    #print (temp_dir)
     return temp_dir,list(set(labels_)),list(set(annotators_)),list(set(files_))
 
 
 def compute_f1_scores(docs):
-    from bratiaa.agree import F1Agreement, partial, input_generator
-    from bratiaa.evaluation import exact_match_token_evaluation,exact_match_instance_evaluation
     project,labels,annotators,docs = docs_to_ann(docs)
-    import re
+    
 
     def token_func(text):
         token = re.compile('\w+|[^\w\s]+')
@@ -173,6 +161,5 @@ def calc(labels):
     metrics["fleiss"]=ratingtask.multi_kappa()
     metrics["alpha"]=ratingtask.alpha()
     metrics["scotts"]=ratingtask.pi()
-
     return metrics
 
